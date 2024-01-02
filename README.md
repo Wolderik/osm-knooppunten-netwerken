@@ -57,12 +57,12 @@ some example data files provided for the region Groningen.
 Let's move on, assuming you have the right data.
 
 The first step is selecting the OSM data. Press the "Select button" to select
-an OSM data file (.osm).
+an OSM data file (.geojson or .osm).
 
 Then you can select a data file to compare against. This file has to be of the
 geojson format.
 
-Lastly you can filter the import data by region. This is strongly recommended
+Lastly you can filter the import data by region. This is recommended
 to make the computing time reasonable. Also make sure the OSM data is also of
 the same region to minimize the number of false positives.
 
