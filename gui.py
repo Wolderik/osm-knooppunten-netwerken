@@ -3,11 +3,9 @@ from PySide6 import QtCore, QtWidgets
 from PySide6.QtCore import QRunnable, Signal, QObject
 from analyze import do_analysis
 from open_file import openFile
-# from resultsView import StringListModel
 
-def gui_do_analysis(osmFileName, importFile, filterRegion, filterProvince, progress):
-        with open(str(osmFileName), 'r') as osmFile:
-            return do_analysis(osmFile, importFile, filterRegion, filterProvince, progress=progress)
+def gui_do_analysis(osmFileName, importFile_nodes, osmFileName_network, importFile_network, filterRegion, filterProvince, progress):
+        return do_analysis(osmFileName, importFile_nodes, osmFileName_network, importFile_network, filterRegion, filterProvince, progress=progress)
 
 class WorkerSignals(QObject):
     '''
@@ -74,11 +72,13 @@ class Worker(QRunnable):
 
 
 class RunWindow(QtWidgets.QWidget):
-    def __init__(self, osmFileName, importFile, filterRegion, filterProvince):
+    def __init__(self, osmFileName, importFile_nodes, osmFileName_network, importFile_network, filterRegion, filterProvince):
         super().__init__()
         print("started run window")
         self.osmFileName = osmFileName
-        self.importFile = importFile
+        self.importFile_nodes = importFile_nodes
+        self.osmFileName_network = osmFileName_network
+        self.importFile_network = importFile_network
         self.filterRegion = filterRegion
         self.filterProvince = filterProvince
         self.setWindowTitle("Running analysis...")
@@ -89,7 +89,7 @@ class RunWindow(QtWidgets.QWidget):
 
         self.threadpool = QtCore.QThreadPool()
 
-        worker = Worker(gui_do_analysis, osmFileName, importFile, filterRegion, filterProvince)
+        worker = Worker(gui_do_analysis, osmFileName, importFile_nodes, osmFileName_network, importFile_network, filterRegion, filterProvince)
         worker.signals.result.connect(self.thread_results)
         worker.signals.finished.connect(self.thread_complete)
         worker.signals.progress.connect(self.thread_progress)
@@ -172,21 +172,39 @@ class MainWindow(QtWidgets.QWidget):
     def __init__(self):
         super().__init__()
         self.osmFile = None
-        self.importFile = None
+        self.importFile_nodes = None
+        self.osmFile_network = None
+        self.importFile_network = None
+
         vlayout = QtWidgets.QVBoxLayout(self)
 
         self.setWindowTitle("OSM Knooppunten import analyzer")
 
+        vlayout1 = QtWidgets.QVBoxLayout()
+        #self.text1, groupbox1 = self.addFileSlot(self.selectOSM, "OSM file:", vlayout)
+        self.text1, groupbox1 = self.addFileSlot(self.selectDataset1, "Dataset 1: nodes or nodes+network", vlayout1)
+        self.text3, groupbox1 = self.addFileSlot(self.selectDataset3, "Dataset 1: network (optional)", vlayout1)
 
-        self.text1, groupbox1 = self.addFileSlot(self.selectOSM, "OSM file:", vlayout)
+        groupbox1 = QtWidgets.QGroupBox()
+        groupbox1.setLayout(vlayout1)
+        vlayout.addWidget(groupbox1)
+
+        #self.text2, groupbox1 = self.addFileSlot(self.selectImportFile, "Import file:", vlayout)
 
         # Add import file and filter region in the same layout
         vlayout2 = QtWidgets.QVBoxLayout()
-        self.text2, groupbox2 = self.addFileSlot(self.selectImportFile, "Import file:", vlayout2)
-        self.filterProvince = self.addFilterWidget("Filter province:", vlayout2)
+        self.text2, groupbox2 = self.addFileSlot(self.selectDataset2, "Dataset 2: nodes", vlayout2)
+        self.text4, groupbox2 = self.addFileSlot(self.selectDataset4, "Dataset 2: network (optional)", vlayout2)
+        #self.filterProvince = self.addFilterWidget("Filter province:", vlayout2)
         groupbox = QtWidgets.QGroupBox()
         groupbox.setLayout(vlayout2)
         vlayout.addWidget(groupbox)
+
+        vlayout3 = QtWidgets.QVBoxLayout()
+        self.filterProvince = self.addFilterWidget("Filter province:", vlayout3)
+        groupbox3 = QtWidgets.QGroupBox()
+        groupbox3.setLayout(vlayout3)
+        vlayout.addWidget(groupbox3)
 
         startButton = QtWidgets.QPushButton("Run")
         vlayout.addWidget(startButton)
@@ -211,9 +229,45 @@ class MainWindow(QtWidgets.QWidget):
         self.text2.setText(self.importFile)
 
     @QtCore.Slot()
+    def selectDataset1(self):
+        self.osmFile, selectedFilter = QtWidgets.QFileDialog.getOpenFileName(self,
+                "Select dataset 1",
+                filter="All Files (*);;GeoJSON or OSM Files (*.geojson *.json *.osm)",
+                selectedFilter="GeoJSON or OSM Files (*.geojson *.json *.osm)")
+
+        self.text1.setText(self.osmFile)
+
+    @QtCore.Slot()
+    def selectDataset2(self):
+        self.importFile_nodes, selectedFilter = QtWidgets.QFileDialog.getOpenFileName(self,
+                "Select dataset 2",
+                filter="All Files (*);;GeoJSON or OSM Files (*.geojson *.json *.osm)",
+                selectedFilter="GeoJSON or OSM Files (*.geojson *.json *.osm)")
+
+        self.text2.setText(self.importFile_nodes)
+
+    @QtCore.Slot()
+    def selectDataset3(self):
+        self.osmFile_network, selectedFilter = QtWidgets.QFileDialog.getOpenFileName(self,
+                "Select dataset 1 (network)",
+                filter="All Files (*);;GeoJSON Files (*.geojson *.json)",
+                selectedFilter="GeoJSON Files (*.geojson *.json)")
+
+        self.text3.setText(self.osmFile_network)
+
+    @QtCore.Slot()
+    def selectDataset4(self):
+        self.importFile_network, selectedFilter = QtWidgets.QFileDialog.getOpenFileName(self,
+                "Select dataset 2 (network)",
+                filter="All Files (*);;GeoJSON Files (*.geojson *.json)",
+                selectedFilter="GeoJSON Files (*.geojson *.json)")
+
+        self.text4.setText(self.importFile_network)
+
+    @QtCore.Slot()
     def startAnalysis(self):
         print(self.osmFile)
-        print(self.importFile)
+        print(self.importFile_nodes)
         filterProvince = self.filterProvince.text()
         if len(filterProvince) == 0:
             filterProvince = None
@@ -221,10 +275,10 @@ class MainWindow(QtWidgets.QWidget):
         if self.osmFile is None:
             return -1
 
-        if self.importFile is None:
+        if self.importFile_nodes is None:
             return -1
 
-        self.runWindow = RunWindow(self.osmFile, self.importFile, None, filterProvince)
+        self.runWindow = RunWindow(self.osmFile, self.importFile_nodes, self.osmFile_network, self.importFile_network, None, filterProvince)
         self.runWindow.resize(600, 400)
         self.runWindow.show()
 

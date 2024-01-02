@@ -1,5 +1,13 @@
 This programs compares OSM walking route data to that of other data sets.
 
+It as extension of the tool by Friso Smit (https://github.com/fwsmit/osm-knooppunten/releases/latest)
+
+New:
+- analysis of the network (routes from node to node)
+- analysis of changes in routedatabank for two timestamps
+- reading of geojson file of OSM data
+- new categories: medium distance moved, added double, removed double
+
 # Goals
 
 The main goal for this tool is to help importing walking and cycling route data
@@ -11,8 +19,8 @@ into OpenStreetMap.
 
 # Current state
 
-This tool is still under active development. Currently it can only analyze
-walking nodes. It's built with the dataset from Routedabank.nl in mind, but it
+This tool is still under active development. Currently it can analyze
+walking nodes+network & cycling nodes (no network). It's built with the dataset from Routedabank.nl in mind, but it
 can be expanded for other datasets in the future.
 
 # Installation
@@ -22,15 +30,16 @@ following libraries:
 
 - python geojson for package for importing geojson data
 - pyside6 for the Qt GUI
+- scipy for spatial datastructure KD tree
 
 Open a command prompt and install with:
 	
-	pip install geojson pyside6
+	pip install geojson pyside6 scipy
 
 Then download the code repository from github. You can dowload the latest
 release (recommended) or the latest git version.
 
-To download the [latest release](https://github.com/fwsmit/osm-knooppunten/releases/latest)
+To download the [latest release](https://github.com/Wolderik/osm-knooppunten-netwerken)
 and unzip it to a directory of your choice. Then you can proceed to running it.
 
 # Running
@@ -73,13 +82,18 @@ the import dataset have been categorized in one of the following categories:
 - `Removed`: Node is not present in import dataset, but is in OSM
 - `Added`: Node is not present in OSM, but is in the import dataset
 - `No change`: Nothing is different between the OSM and import node
-- `Moved short distance`: Node moved a distance of <100m
+- `Moved short distance`: Node moved a distance of <20m
+- `Moved medium distance`: Node moved a distance of 20-100m
 - `Moved long distance`: Node moved a distance of 100-1000m
+- `Added double`: Node is not present in OSM, but is in the import dataset as double node
+- `Removed double`: Node is not present in import dataset, but is in OSM as double node
 - `Other`: Could not be determined to be in one of the above categories
 
-All results are exported to geojson. You can open them in JOSM to analyze them
+All results are exported to geojson in result directory. You can open them in JOSM to analyze them
 further and make changes to OSM. All nodes in the export have metadata tagged
 to thme with their node numbers in the import dataset.
+
+For the network the same categories are used. Short distance is edge distance < 50 m. Medium distance 50 to 100 m. Results are exported to results/netwerk directory.
 
 # Data sources
 
@@ -90,19 +104,17 @@ This tool is written for comparing the data from OpenStreetMap and Routedatabank
 Below are instructions for gathering data from the overpass API.
 
 - Go to overpass-turbo.eu
-- Use the wizard to create a query with your region of choice. For
-  Noord-Brabant this would be: `rwn_ref=* and network:type=node_network and type:node in Noord-Brabant`
+- Use the wizard to create a query with your region of choice.
+For hiking this would be: `(network=rwn and network:type=node_network and type:relation) or (rwn_ref=* and network:type=node_network and type:node)`
+  For cycling network: 'rcn_ref=* and network:type=node_network and type:node in Noord-Brabant`
+
 - Run the query and export the results as geojson
-- Open the geojson file in JOSM
-- Click "file > save as" and save as .osm file
 
 You now have succesfully created a dataset that can be used by this program.
 
 ## Routedatabank
 
-This data is not downloadable without account, but you can make use of the data
-in this repository (only for OSM purposes).
-Contact Friso Smit (fw.smit01@gmail.com) if you need a more up-to-date version of the dataset.
+This data is not downloadable without account. But the comparison results are added in this repository (only for OSM purposes).
 
 # Command line interface
 
@@ -110,18 +122,37 @@ You can also run the analyzer using a command line interface. This currently has
 the similar functionality to the graphical application. Instructions for running
 it are below.
 
-Open a terminal in this project's directory. The program can be run
-with the following command:
+Open a terminal in this project's directory. 
 
-	python knooppunten-cli.py [-h] --osmfile OSMFILE --importfile IMPORTFILE [--region REGION]
+The program can be run with the following command for analyzing nodes and network in which OSMFILE contains both nodes and network:
+
+	python knooppunten-cli.py [-h] --osmfile OSMFILE --importfile_nodes IMPORTFILE_NODES --importfile_network IMPORTFILE_NETWORK [--region REGION]
+
+Example:
+
+python knooppunten-cli.py --osmfile "D:\Downloads\ZuidOostBrabant_wandelen_20_aug_2023.geojson" --importfile_network "D:\Downloads\Route_data_bank\18_augustus_2023\Wandelnetwerken (wgs84).json" --importfile_nodes "D:\Downloads\Route_data_bank\18_augustus_2023\Wandelknooppunten (wgs84).json" --region "Noord-Brabant"
+
+
+The program can be run with the following command for comparing nodes/network from Routedatabank with different timestamp:
+
+	python knooppunten-cli.py [-h] --osmfile OSMFILE_NODES --osmfile_network OSMFILE_NETWORK --importfile_nodes IMPORTFILE_NODES --importfile_network IMPORTFILE_NETWORK [--region REGION]
+
+Example:
+
+python knooppunten-cli.py --osmfile "D:\Downloads\Route_data_bank\30_juli_2023\Wandelknooppunten (wgs84).json" --osmfile_network "D:\Downloads\Route_data_bank\30_juli_2023\Wandelnetwerken (wgs84).json" --importfile_network "D:\Downloads\Route_data_bank\20_sept_2023\Wandelnetwerken (wgs84).json" --importfile_nodes "D:\Downloads\Route_data_bank\20_sept_2023\Wandelknooppunten (wgs84).json"
+
+
+The program can be run with the following command for analyzing nodes:
+
+	python knooppunten-cli.py [-h] --osmfile OSMFILE --importfile_nodes IMPORTFILE [--region REGION]
 
 Where you replace the arguments in capital letters with your own arguments. For example:
 
-	python knooppunten-cli.py --osmfile data/groningen.osm --importfile 'data/Wandelknooppunten (wgs84).geojson' --region "Groningen"
+	python knooppunten-cli.py --osmfile data/groningen.osm --importfile_nodes 'data/Wandelknooppunten (wgs84).geojson' --region "Groningen"
 
 Or for Windows users:
 
-	python knooppunten-cli.py --osmfile data\groningen.osm --importfile 'data\Wandelknooppunten (wgs84).geojson' --region "Groningen"
+	python knooppunten-cli.py --osmfile data\groningen.osm --importfile_nodes 'data\Wandelknooppunten (wgs84).geojson' --region "Groningen"
 
 
 For more detail about the arguments, run:
