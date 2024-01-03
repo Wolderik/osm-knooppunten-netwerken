@@ -526,7 +526,10 @@ def do_analysis_edges(edges_osm, edges_ext, edges_ext_invalid, progress):
                     if dist > 50:
                         change_type = ChangeType.MOVED_MEDIUM
                     else:
-                        change_type = ChangeType.MOVED_SHORT
+                        if dist > 1:
+                            change_type = ChangeType.MOVED_SHORT
+                        else:
+                            change_type = ChangeType.NO
                 
                 edge_ext.matched_edge = closest_match
                 edge_ext.change_type = change_type
