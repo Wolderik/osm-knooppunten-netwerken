@@ -171,7 +171,7 @@ def is_node_removed_osm(node_osm, nodes_osm, nodes_ext):
     if not all_matching_nodes or len(all_matching_nodes) == 0 or closest_match_dist > 1000:
         return True
 
-def do_analysis_internal(nodes_osm, nodes_ext, nodes_ext_invalid, progress):
+def do_analysis_internal(nodes_osm, nodes_ext, nodes_osm_invalid, nodes_ext_invalid, progress):
 
     use_kd_tree = True
     #use_kd_tree = False
@@ -254,9 +254,12 @@ def do_analysis_internal(nodes_osm, nodes_ext, nodes_ext_invalid, progress):
         print("{}: {}".format(key, len(node_changes_dict[key])))
 
     #progress.emit("Exporting results")
-    export_geojson(nodes_ext_invalid, "invalid_nodes_ext.geojson")
-
     exported_files = []
+    export_file = export_geojson(nodes_osm_invalid, "Invalid_osm.geojson")
+    exported_files.append(export_file)
+    export_file = export_geojson(nodes_ext_invalid, "Invalid_ext.geojson")
+    exported_files.append(export_file)
+
     for key in ChangeType:
         if key == ChangeType.REMOVED or key == ChangeType.REMOVED_DOUBLE:
             export_file = export_geojson(node_changes_dict[key], "{}_osm.geojson".format(key))
@@ -400,7 +403,7 @@ def calculate_edge_to_edge_distance(edge_a, edge_b):
 
     return max(max_dist_a, max_dist_b)
 
-def do_analysis_edges(edges_osm, edges_ext, edges_ext_invalid, progress):
+def do_analysis_edges(edges_osm, edges_ext, edges_osm_invalid, edges_ext_invalid, invalid_edges_osm, invalid_edges_ext, progress):
 
     print("match ext")
 
@@ -555,9 +558,13 @@ def do_analysis_edges(edges_osm, edges_ext, edges_ext_invalid, progress):
 
     for edge in edges_osm:
         if not edge.matched_edge:
-            if edge_osm.closest_match_edge:
-                edge.change_type = ChangeType.REMOVED_DOUBLE
-                edge_changes_dict[ChangeType.REMOVED_DOUBLE].append(edge)
+            if edge.closest_match_edge:
+                if edge.closest_match_dist < 50:
+                    edge.change_type = ChangeType.REMOVED_DOUBLE
+                    edge_changes_dict[ChangeType.REMOVED_DOUBLE].append(edge)
+                else:
+                    edge.change_type = ChangeType.REMOVED
+                    edge_changes_dict[ChangeType.REMOVED].append(edge)
             else:
                 edge.change_type = ChangeType.REMOVED
                 edge_changes_dict[ChangeType.REMOVED].append(edge)
@@ -567,9 +574,17 @@ def do_analysis_edges(edges_osm, edges_ext, edges_ext_invalid, progress):
     for key in edge_changes_dict:
         print("{}: {}".format(key, len(edge_changes_dict[key])))
 
-    export_geojson_edges(edges_ext_invalid, "invalid_edges_ext.geojson")
-
     exported_files = []
+    export_file = export_geojson_edges(edges_osm_invalid, "Invalid_osm.geojson")
+    exported_files.append(export_file)
+    export_file = export_geojson_edges(edges_ext_invalid, "Invalid_ext.geojson")
+    exported_files.append(export_file)
+
+    export_file = export_geojson_edges(invalid_edges_osm, "Unmatched_to_nodes_osm.geojson")
+    exported_files.append(export_file)
+    export_file = export_geojson_edges(invalid_edges_ext, "Unmatched_to_nodes_ext.geojson")
+    exported_files.append(export_file)
+
     for key in ChangeType:
         if key == ChangeType.REMOVED or key == ChangeType.REMOVED_DOUBLE:
             export_file = export_geojson_edges(edge_changes_dict[key], "{}_osm.geojson".format(key))
@@ -701,7 +716,7 @@ def do_analysis(osmfilename, importfilename_nodes, osmfile_network, importfilena
     if osmfile_network:
         edges_osm, edges_osm_invalid = import_geojson_netwerken(osmfile_network, rwn_name="knooppuntnummer", rcn_name="knooppuntnr", filter_regio=filter_region, filter_province=filter_province)
 
-    print("Import OSM done: nodes "+str(len(nodes_osm))+" edges "+str(len(edges_osm)))
+    print("Import OSM done: nodes "+str(len(nodes_osm))+" edges "+str(len(edges_osm))+ " invalid nodes "+str(len(nodes_osm_invalid))+" invalid edges "+str(len(edges_osm_invalid)))
 
     nodes_ext, nodes_ext_invalid = import_geojson(importfilename_nodes, rwn_name="knooppuntnummer", rcn_name="knooppuntnr", filter_regio=filter_region, filter_province=filter_province)
 
@@ -709,12 +724,12 @@ def do_analysis(osmfilename, importfilename_nodes, osmfile_network, importfilena
         edges_ext, edges_ext_invalid = import_geojson_netwerken(importfilename_network, rwn_name="knooppuntnummer", rcn_name="knooppuntnr", filter_regio=filter_region, filter_province=filter_province)
 
     if edges_ext:
-        print("Import EXT done: nodes "+str(len(nodes_ext))+" edges "+str(len(edges_ext)))
+        print("Import EXT done: nodes "+str(len(nodes_ext))+" edges "+str(len(edges_ext))+ " invalid nodes "+str(len(nodes_ext_invalid))+         " invalid edges "+str(len(edges_ext_invalid)))
     else:
-        print("Import EXT done: nodes "+str(len(nodes_ext))+" edges "+str(0))
+        print("Import EXT done: nodes "+str(len(nodes_ext))+" edges "+str(0)+ " invalid nodes "+str(len(nodes_ext_invalid)))
 
     if nodes_osm and nodes_ext:
-        exported_files = do_analysis_internal(nodes_osm, nodes_ext, nodes_ext_invalid, progress)
+        exported_files = do_analysis_internal(nodes_osm, nodes_ext, nodes_osm_invalid, nodes_ext_invalid, progress)
 
     #if edges_osm:
     #    check_single_lines(edges_osm)
@@ -724,14 +739,16 @@ def do_analysis(osmfilename, importfilename_nodes, osmfile_network, importfilena
 
     if nodes_osm and edges_osm:
         valid_edges_osm, invalid_edges_osm = add_nodes_to_edges(nodes_osm, edges_osm)
+        print("Add OSM nodes to edges: invalid edges "+str(len(invalid_edges_osm )))
 
     if nodes_ext and edges_ext:
         valid_edges_ext, invalid_edges_ext = add_nodes_to_edges(nodes_ext, edges_ext)
+        print("Add EXT nodes to edges: invalid edges "+str(len(invalid_edges_ext )))
 
     #export_geojson_edges(invalid_edges_ext, "invalid_edges_ext.geojson")
 
     if edges_osm and edges_ext:
-        do_analysis_edges(valid_edges_osm, valid_edges_ext, invalid_edges_ext, progress)
+        do_analysis_edges(valid_edges_osm, valid_edges_ext, edges_osm_invalid, edges_ext_invalid, invalid_edges_osm, invalid_edges_ext, progress)
 
     if nodes_osm:
        print("OSM dataset:", osmfilename, "({} nodes)".format(len(nodes_osm)))
