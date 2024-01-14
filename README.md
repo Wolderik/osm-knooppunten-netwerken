@@ -105,8 +105,8 @@ Below are instructions for gathering data from the overpass API.
 
 - Go to overpass-turbo.eu
 - Use the wizard to create a query with your region of choice.
-	For hiking nodes and network this would be: `((network=rwn and network:type=node_network and type:relation) or (rwn_ref=* and network:type=node_network and type:node)) in Noord-Brabant`
-	For cycling nodes: `rcn_ref=* and network:type=node_network and type:node in Noord-Brabant`
+	- For hiking nodes and network this would be: `((network=rwn and network:type=node_network and type:relation) or (rwn_ref=* and network:type=node_network and type:node)) in Noord-Brabant`
+	- For cycling nodes: `rcn_ref=* and network:type=node_network and type:node in Noord-Brabant`
 
 - Run the query and export the results as geojson
 
