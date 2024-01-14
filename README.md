@@ -106,7 +106,7 @@ Below are instructions for gathering data from the overpass API.
 - Go to overpass-turbo.eu
 - Use the wizard to create a query with your region of choice.
 	- For hiking nodes and network this would be: `((network=rwn and network:type=node_network and type:relation) or (rwn_ref=* and network:type=node_network and type:node)) in Noord-Brabant`
-	- For cycling nodes: `rcn_ref=* and network:type=node_network and type:node in Noord-Brabant`
+	- For cycling nodes: `rcn_ref=* and network:type=node_network and type:node in Nederland`
 
 - Run the query and export the results as geojson
 
@@ -124,7 +124,7 @@ it are below.
 
 Open a terminal in this project's directory. 
 
-## Comparing nodes and network: OSM vs Routedatabank
+## Comparing hiking nodes and network: OSM vs Routedatabank
 
 The program can be run with the following command for analyzing nodes and network in which OSMFILE contains both nodes and network:
 
@@ -134,7 +134,7 @@ Example:
 
 python knooppunten-cli.py --osmfile "D:\Downloads\ZuidOostBrabant_wandelen_20_aug_2023.geojson" --importfile_network "D:\Downloads\Route_data_bank\18_augustus_2023\Wandelnetwerken (wgs84).json" --importfile_nodes "D:\Downloads\Route_data_bank\18_augustus_2023\Wandelknooppunten (wgs84).json" --region "Noord-Brabant"
 
-## Comparing nodes and network: Routedatabank vs Routedatabank
+## Comparing hiking nodes and network: Routedatabank vs Routedatabank
 
 The program can be run with the following command for comparing nodes/network from Routedatabank with different timestamp:
 
@@ -142,22 +142,27 @@ The program can be run with the following command for comparing nodes/network fr
 
 Example:
 
-python knooppunten-cli.py --osmfile "D:\Downloads\Route_data_bank\30_juli_2023\Wandelknooppunten (wgs84).json" --osmfile_network "D:\Downloads\Route_data_bank\30_juli_2023\Wandelnetwerken (wgs84).json" --importfile_network "D:\Downloads\Route_data_bank\20_sept_2023\Wandelnetwerken (wgs84).json" --importfile_nodes "D:\Downloads\Route_data_bank\20_sept_2023\Wandelknooppunten (wgs84).json"
+python knooppunten-cli.py --osmfile "D:\Downloads\Route_data_bank\30_juli_2023\Wandelknooppunten (wgs84).json" --osmfile_network "D:\Downloads\Route_data_bank\30_juli_2023\Wandelnetwerken (wgs84).json" --importfile_network "D:\Downloads\Route_data_bank\2_jan_2024\Wandelnetwerken (wgs84).json" --importfile_nodes "D:\Downloads\Route_data_bank\2_jan_2024\Wandelknooppunten (wgs84).json"
 
-## Comparing nodes: OSM vs Routedatabank
+## Comparing cycling nodes: OSM vs Routedatabank
 
 The program can be run with the following command for analyzing nodes:
 
 	python knooppunten-cli.py [-h] --osmfile OSMFILE --importfile_nodes IMPORTFILE [--region REGION]
 
-Where you replace the arguments in capital letters with your own arguments. For example:
+Where you replace the arguments in capital letters with your own arguments. For example for Windows users:
 
-	python knooppunten-cli.py --osmfile data/groningen.osm --importfile_nodes 'data/Wandelknooppunten (wgs84).geojson' --region "Groningen"
+        python knooppunten-cli.py --osmfile "D:\Downloads\OSM_Nederland_fietsen_14_jan_2024.geojson" --importfile_nodes "D:\Downloads\Route_data_bank\2_jan_2024\Fietsknooppunten (wgs84).json"
 
-Or for Windows users:
+## Comparing cycling nodes: Routedatabank vs Routedatabank
 
-	python knooppunten-cli.py --osmfile data\groningen.osm --importfile_nodes 'data\Wandelknooppunten (wgs84).geojson' --region "Groningen"
+The program can be run with the following command for comparing nodes from Routedatabank with different timestamp:
 
+	python knooppunten-cli.py [-h] --osmfile OSMFILE_NODES --importfile_nodes IMPORTFILE_NODES [--region REGION]
+
+Example:
+
+python knooppunten-cli.py --osmfile "D:\Downloads\Route_data_bank\30_juli_2023\Fietsknooppunten (wgs84).json" --importfile_nodes "D:\Downloads\Route_data_bank\2_jan_2024\Fietsknooppunten (wgs84).json"
 
 For more detail about the arguments, run:
 

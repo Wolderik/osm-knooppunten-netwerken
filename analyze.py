@@ -708,7 +708,10 @@ def do_analysis(osmfilename, importfilename_nodes, osmfile_network, importfilena
     if importfilename_network:
         edges_ext, edges_ext_invalid = import_geojson_netwerken(importfilename_network, rwn_name="knooppuntnummer", rcn_name="knooppuntnr", filter_regio=filter_region, filter_province=filter_province)
 
-    print("Import EXT done: nodes "+str(len(nodes_ext))+" edges "+str(len(edges_ext)))
+    if edges_ext:
+        print("Import EXT done: nodes "+str(len(nodes_ext))+" edges "+str(len(edges_ext)))
+    else:
+        print("Import EXT done: nodes "+str(len(nodes_ext))+" edges "+str(0))
 
     if nodes_osm and nodes_ext:
         exported_files = do_analysis_internal(nodes_osm, nodes_ext, nodes_ext_invalid, progress)
