@@ -137,7 +137,7 @@ def import_geojson_combined(filename, rwn_name = None, rcn_name = None, filter_r
                 coord_lat = None
 
             node = Node(lon=coord_lon, lat=coord_lat, rwn_ref=rwn_ref_id, rcn_ref=rcn_ref_id)
-            if not helper.is_number_valid(node.rwn_ref) and not helper.is_number_valid(node.rcn_ref):
+            if not helper.is_number_valid(node.rwn_ref) or not helper.is_number_valid(node.rcn_ref):
                 invalid_nodes.append(node)
             else:
                 nodes.append(node)
