@@ -124,6 +124,8 @@ it are below.
 
 Open a terminal in this project's directory. 
 
+## Comparing nodes and network: OSM vs Routedatabank
+
 The program can be run with the following command for analyzing nodes and network in which OSMFILE contains both nodes and network:
 
 	python knooppunten-cli.py [-h] --osmfile OSMFILE --importfile_nodes IMPORTFILE_NODES --importfile_network IMPORTFILE_NETWORK [--region REGION]
@@ -132,6 +134,7 @@ Example:
 
 python knooppunten-cli.py --osmfile "D:\Downloads\ZuidOostBrabant_wandelen_20_aug_2023.geojson" --importfile_network "D:\Downloads\Route_data_bank\18_augustus_2023\Wandelnetwerken (wgs84).json" --importfile_nodes "D:\Downloads\Route_data_bank\18_augustus_2023\Wandelknooppunten (wgs84).json" --region "Noord-Brabant"
 
+## Comparing nodes and network: Routedatabank vs Routedatabank
 
 The program can be run with the following command for comparing nodes/network from Routedatabank with different timestamp:
 
@@ -141,6 +144,7 @@ Example:
 
 python knooppunten-cli.py --osmfile "D:\Downloads\Route_data_bank\30_juli_2023\Wandelknooppunten (wgs84).json" --osmfile_network "D:\Downloads\Route_data_bank\30_juli_2023\Wandelnetwerken (wgs84).json" --importfile_network "D:\Downloads\Route_data_bank\20_sept_2023\Wandelnetwerken (wgs84).json" --importfile_nodes "D:\Downloads\Route_data_bank\20_sept_2023\Wandelknooppunten (wgs84).json"
 
+## Comparing nodes: OSM vs Routedatabank
 
 The program can be run with the following command for analyzing nodes:
 
