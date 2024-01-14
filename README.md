@@ -130,9 +130,11 @@ The program can be run with the following command for analyzing nodes and networ
 
 	python knooppunten-cli.py [-h] --osmfile OSMFILE --importfile_nodes IMPORTFILE_NODES --importfile_network IMPORTFILE_NETWORK [--region REGION]
 
-Example:
+Examples:
 
 python knooppunten-cli.py --osmfile "D:\Downloads\ZuidOostBrabant_wandelen_20_aug_2023.geojson" --importfile_network "D:\Downloads\Route_data_bank\18_augustus_2023\Wandelnetwerken (wgs84).json" --importfile_nodes "D:\Downloads\Route_data_bank\18_augustus_2023\Wandelknooppunten (wgs84).json" --region "Noord-Brabant"
+
+python knooppunten-cli.py --osmfile "D:\Downloads\OSM_Nederland_14_jan_2024.geojson" --importfile_network "D:\Downloads\Route_data_bank\2_jan_2024\Wandelnetwerken (wgs84).json" --importfile_nodes "D:\Downloads\Route_data_bank\2_jan_2024\Wandelknooppunten (wgs84).json"
 
 ## Comparing hiking nodes and network: Routedatabank vs Routedatabank
 
