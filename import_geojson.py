@@ -3,7 +3,7 @@ import os
 import math
 import sys
 from node import Node
-from compare import dist_complicated
+from compare import dist_complicated, convert_rd_to_wgs
 from osm_knooppunten import helper
 from export import ExportFile
 from edge import Edge
@@ -89,6 +89,11 @@ def import_geojson_combined(filename, rwn_name = None, rcn_name = None, filter_r
     for node_edge_data in data['features']:
         #print(edge_data['properties'])
 
+        file_id = node_edge_data['id']
+        rd_coords = False
+        if file_id.startswith('fietsknooppunten_vrij'):
+            rd_coords = True
+
         rwn_ref_id = None
 
         regio = node_edge_data['properties'].get("regio")
@@ -130,6 +135,10 @@ def import_geojson_combined(filename, rwn_name = None, rcn_name = None, filter_r
 
             if node_edge_data['geometry']:
                 coords = node_edge_data['geometry']['coordinates']
+
+                if rd_coords:
+                    coords = convert_rd_to_wgs([coords])[0]
+
                 coord_lon = coords[0]
                 coord_lat = coords[1]
             else:
@@ -157,6 +166,10 @@ def import_geojson_combined(filename, rwn_name = None, rcn_name = None, filter_r
 
             if node_edge_data['geometry']:
                 coords = node_edge_data['geometry']['coordinates']
+
+                if rd_coords:
+                    coords = convert_rd_to_wgs(coords)
+
             else:
                 coords = None
 
@@ -181,6 +194,12 @@ def import_geojson(filename, rwn_name = None, rcn_name = None, filter_regio = No
     invalid_nodes = []
 
     for node_data in data['features']:
+        
+        file_id = node_data['id']
+        rd_coords = False
+        if file_id.startswith('fietsknooppunten_vrij'):
+            rd_coords = True
+
         rwn_ref_id = None
 
         regio = node_data['properties'].get("regio")
@@ -212,6 +231,9 @@ def import_geojson(filename, rwn_name = None, rcn_name = None, filter_regio = No
 
         if node_data['geometry']:
             coords = node_data['geometry']['coordinates']
+
+            if rd_coords:
+                 coords = convert_rd_to_wgs([coords])[0]
             coord_lon = coords[0]
             coord_lat = coords[1]
         else:

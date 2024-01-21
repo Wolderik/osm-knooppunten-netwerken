@@ -31,10 +31,11 @@ following libraries:
 - python geojson for package for importing geojson data
 - pyside6 for the Qt GUI
 - scipy for spatial datastructure KD tree
+- rijksdriehoek for converting RD coordinates to wgs
 
 Open a command prompt and install with:
 	
-	pip install geojson pyside6 scipy
+	pip install geojson pyside6 scipy rijksdriehoek
 
 Then download the code repository from github. You can dowload the latest
 release (recommended) or the latest git version.
@@ -164,7 +165,7 @@ The program can be run with the following command for comparing nodes from Route
 
 Example:
 
-python knooppunten-cli.py --osmfile "D:\Downloads\Route_data_bank\30_juli_2023\Fietsknooppunten (wgs84).json" --importfile_nodes "D:\Downloads\Route_data_bank\2_jan_2024\Fietsknooppunten (wgs84).json"
+python knooppunten-cli.py --osmfile "D:\Downloads\Route_data_bank\30_juli_2023\Fietsknooppunten (open data).json" --importfile_nodes "D:\Downloads\Route_data_bank\21_jan_2024\Fietsknooppunten (open data).json"
 
 For more detail about the arguments, run:
 

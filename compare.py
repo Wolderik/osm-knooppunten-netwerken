@@ -1,6 +1,19 @@
 import math
 from scipy.spatial import KDTree
 import numpy as np
+from rijksdriehoek import rijksdriehoek
+
+def convert_rd_to_wgs(coords):
+    coords_in_wgs=[]
+    
+    for lonlat in coords:
+        rd = rijksdriehoek.Rijksdriehoek(lonlat[0], lonlat[1])  
+        lat_wgs, lon_wgs = rd.to_wgs()
+      
+        coords_in_wgs.append((lon_wgs, lat_wgs))
+    
+    return coords_in_wgs
+    
 
 def dist_complicated(lat1, lon1, lat2, lon2):
     lat1, lon1, lat2, lon2 = map(math.radians, [lat1, lon1, lat2, lon2])
