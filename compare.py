@@ -14,7 +14,6 @@ def convert_rd_to_wgs(coords):
     
     return coords_in_wgs
     
-
 def dist_complicated(lat1, lon1, lat2, lon2):
     lat1, lon1, lat2, lon2 = map(math.radians, [lat1, lon1, lat2, lon2])
 
