@@ -1,6 +1,6 @@
 This programs compares OSM walking route data to that of other data sets.
 
-It as extension of the tool by Friso Smit (https://github.com/fwsmit/osm-knooppunten/releases/latest)
+It is extension of the tool by Friso Smit (https://github.com/fwsmit/osm-knooppunten/releases/latest)
 
 New:
 - analysis of the network (routes from node to node)
