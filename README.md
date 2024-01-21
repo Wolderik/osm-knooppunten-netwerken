@@ -155,7 +155,7 @@ The program can be run with the following command for analyzing nodes:
 
 Where you replace the arguments in capital letters with your own arguments. For example for Windows users:
 
-        python knooppunten-cli.py --osmfile "D:\Downloads\OSM_Nederland_fietsen_14_jan_2024.geojson" --importfile_nodes "D:\Downloads\Route_data_bank\2_jan_2024\Fietsknooppunten (wgs84).json"
+        python knooppunten-cli.py --osmfile "D:\Downloads\OSM_Nederland_fietsen_14_jan_2024.geojson" --importfile_nodes "D:\Downloads\Route_data_bank\21_jan_2024\Fietsknooppunten (open data).json"
 
 ## Comparing cycling nodes: Routedatabank vs Routedatabank
 
