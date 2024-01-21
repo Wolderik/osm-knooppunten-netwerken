@@ -133,9 +133,9 @@ The program can be run with the following command for analyzing nodes and networ
 
 Examples:
 
-python knooppunten-cli.py --osmfile "D:\Downloads\ZuidOostBrabant_wandelen_20_aug_2023.geojson" --importfile_network "D:\Downloads\Route_data_bank\18_augustus_2023\Wandelnetwerken (wgs84).json" --importfile_nodes "D:\Downloads\Route_data_bank\18_augustus_2023\Wandelknooppunten (wgs84).json" --region "Noord-Brabant"
+	python knooppunten-cli.py --osmfile "D:\Downloads\ZuidOostBrabant_wandelen_20_aug_2023.geojson" --importfile_network "D:\Downloads\Route_data_bank\18_augustus_2023\Wandelnetwerken (wgs84).json" --importfile_nodes "D:\Downloads\Route_data_bank\18_augustus_2023\Wandelknooppunten (wgs84).json" --region "Noord-Brabant"
 
-python knooppunten-cli.py --osmfile "D:\Downloads\OSM_Nederland_14_jan_2024.geojson" --importfile_network "D:\Downloads\Route_data_bank\2_jan_2024\Wandelnetwerken (wgs84).json" --importfile_nodes "D:\Downloads\Route_data_bank\2_jan_2024\Wandelknooppunten (wgs84).json"
+	python knooppunten-cli.py --osmfile "D:\Downloads\OSM_Nederland_14_jan_2024.geojson" --importfile_network "D:\Downloads\Route_data_bank\2_jan_2024\Wandelnetwerken (wgs84).json" --importfile_nodes "D:\Downloads\Route_data_bank\2_jan_2024\Wandelknooppunten (wgs84).json"
 
 ## Comparing hiking nodes and network: Routedatabank vs Routedatabank
 
@@ -145,7 +145,7 @@ The program can be run with the following command for comparing nodes/network fr
 
 Example:
 
-python knooppunten-cli.py --osmfile "D:\Downloads\Route_data_bank\30_juli_2023\Wandelknooppunten (wgs84).json" --osmfile_network "D:\Downloads\Route_data_bank\30_juli_2023\Wandelnetwerken (wgs84).json" --importfile_network "D:\Downloads\Route_data_bank\2_jan_2024\Wandelnetwerken (wgs84).json" --importfile_nodes "D:\Downloads\Route_data_bank\2_jan_2024\Wandelknooppunten (wgs84).json"
+	python knooppunten-cli.py --osmfile "D:\Downloads\Route_data_bank\30_juli_2023\Wandelknooppunten (wgs84).json" --osmfile_network "D:\Downloads\Route_data_bank\30_juli_2023\Wandelnetwerken (wgs84).json" --importfile_network "D:\Downloads\Route_data_bank\2_jan_2024\Wandelnetwerken (wgs84).json" --importfile_nodes "D:\Downloads\Route_data_bank\2_jan_2024\Wandelknooppunten (wgs84).json"
 
 ## Comparing cycling nodes: OSM vs Routedatabank
 
@@ -165,7 +165,7 @@ The program can be run with the following command for comparing nodes from Route
 
 Example:
 
-python knooppunten-cli.py --osmfile "D:\Downloads\Route_data_bank\30_juli_2023\Fietsknooppunten (open data).json" --importfile_nodes "D:\Downloads\Route_data_bank\21_jan_2024\Fietsknooppunten (open data).json"
+	python knooppunten-cli.py --osmfile "D:\Downloads\Route_data_bank\30_juli_2023\Fietsknooppunten (open data).json" --importfile_nodes "D:\Downloads\Route_data_bank\21_jan_2024\Fietsknooppunten (open data).json"
 
 For more detail about the arguments, run:
 
