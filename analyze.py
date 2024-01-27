@@ -25,28 +25,34 @@ class ChangeType(Enum):
     # doesn't have a matching node either. Minor renames are classified as RENAMED_MINOR
     RENAMED = 4
 
-    # Matches with a node in the other dataset with distance 1-10m
-    MOVED_SHORT = 5
-
-    # Matches with a node in the other dataset with distance 10-100m
-    MOVED_MEDIUM = 6
-
-    # Matches with a node in the other dataset with distance 100-1000m
-    MOVED_LONG = 7
-
-    # Matches with a node in the other dataset with distance < 20 however another node also matches with smaller distance
-    ADDED_DOUBLE = 8
-
-    # Matches with a node in the other dataset with distance < 20 however that node does not match with it
-    REMOVED_DOUBLE = 9
-
     # Same as renamed, but used for minor renames. This is used when the
     # difference is just a couple of letters. When it's a different number,
     # it's classified as a normal rename.
-    RENAMED_MINOR = 10
+    RENAMED_MINOR = 5
+
+    # Matches with a node in the other dataset with distance 1-20m
+    MOVED_SHORT = 6
+
+    # Matches with a node in the other dataset with distance 20-100m
+    MOVED_MEDIUM = 7
+
+    # Matches with a node in the other dataset with distance 100-1000m
+    MOVED_LONG = 8
+
+    # Matches with a node in the other dataset with distance < 60 however another node also matches with smaller distance
+    ADDED_DOUBLE = 9
+
+    # Matches with a node in the other dataset with distance > 60 and < 500 however another node also matches with smaller distance
+    ADDED_DOUBLE_LONG = 10
+
+    # Matches with a node in the other dataset with distance < 60 however that node does not match with it
+    REMOVED_DOUBLE = 11
+
+    # Matches with a node in the other dataset with distance > 60 and < 500 however that node does not match with it
+    REMOVED_DOUBLE_LONG = 12
 
     # None of the others
-    OTHER = 11
+    OTHER = 13
 
     def __str__(self):
         if self == ChangeType.NO:
@@ -78,6 +84,12 @@ class ChangeType(Enum):
 
         if self == ChangeType.REMOVED_DOUBLE:
             return "Removed double"
+
+        if self == ChangeType.ADDED_DOUBLE_LONG:
+            return "Added double long distance"
+
+        if self == ChangeType.REMOVED_DOUBLE_LONG:
+            return "Removed double long distance"
 
         if self == ChangeType.OTHER:
             return "Other"
@@ -138,11 +150,14 @@ def get_node_change_type_ext(node_ext, nodes_osm, nodes_ext):
     if closest_match_dist > 1000:
         return ChangeType.ADDED, None
 
-    if not one_to_one_match and closest_match_dist > 60:
-        return ChangeType.ADDED, None
+    if not one_to_one_match and closest_match_dist < 60:
+        return ChangeType.ADDED_DOUBLE, None
+
+    if not one_to_one_match and closest_match_dist < 500:
+        return ChangeType.ADDED_DOUBLE_LONG, None
 
     if not one_to_one_match:
-        return ChangeType.ADDED_DOUBLE, None
+        return ChangeType.ADDED, None
 
     if closest_match_dist > 100 and closest_match_dist < 1000:
         return ChangeType.MOVED_LONG, closest_match
@@ -242,8 +257,12 @@ def do_analysis_internal(nodes_osm, nodes_ext, nodes_osm_invalid, nodes_ext_inva
                     node.change_type = ChangeType.REMOVED_DOUBLE
                     node_changes_dict[ChangeType.REMOVED_DOUBLE].append(node)
                 else:
-                    node.change_type = ChangeType.REMOVED
-                    node_changes_dict[ChangeType.REMOVED].append(node)
+                    if node.closest_match_dist < 500:
+                        node.change_type = ChangeType.REMOVED_DOUBLE_LONG
+                        node_changes_dict[ChangeType.REMOVED_DOUBLE_LONG].append(node)
+                    else:
+                        node.change_type = ChangeType.REMOVED
+                        node_changes_dict[ChangeType.REMOVED].append(node)
             else:
                 node.change_type = ChangeType.REMOVED
                 node_changes_dict[ChangeType.REMOVED].append(node)

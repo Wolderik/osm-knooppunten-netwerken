@@ -1,0 +1,1 @@
+[{"type": "Feature", "geometry": {"type": "Point", "coordinates": [5.734637, 51.969938]}, "properties": {"rwn_ref": "R15", "rcn_ref": null, "distance closest node": 144.95883676923435}}, {"type": "Feature", "geometry": {"type": "Point", "coordinates": [5.184222, 51.640762]}, "properties": {"rwn_ref": "10", "rcn_ref": null, "distance closest node": 381.5640320769754}}]

@@ -86,8 +86,10 @@ the import dataset have been categorized in one of the following categories:
 - `Moved short distance`: Node moved a distance of <20m
 - `Moved medium distance`: Node moved a distance of 20-100m
 - `Moved long distance`: Node moved a distance of 100-1000m
-- `Added double`: Node is not present in OSM, but is in the import dataset as double node
-- `Removed double`: Node is not present in import dataset, but is in OSM as double node
+- `Added double`: Node is not present in OSM, but is in the import dataset as double node at distance < 60m
+- `Removed double`: Node is not present in import dataset, but is in OSM as double node at distance < 60m
+- `Added double long distance`: Node is not present in OSM, but is in the import dataset as double node at distance 60-500m
+- `Removed double long distance`: Node is not present in import dataset, but is in OSM as double node at distance 60-500m
 - `Other`: Could not be determined to be in one of the above categories
 
 All results are exported to geojson in result directory. You can open them in JOSM to analyze them
